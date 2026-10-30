@@ -1514,7 +1514,9 @@ function processUnlockCodeFromUrl() {
 }
 
 function fillKey() { return userKey(`fills:${state.book.id}:${state.page}`); }
-function canvasKey() { return userKey(`canvas:${state.book.id}:${state.page}`); }
+// Bump LINE_ART_VERSION whenever page PNGs are redrawn: paint saved against older art no longer lines up.
+const LINE_ART_VERSION = 'a3';
+function canvasKey() { return userKey(`canvas:${LINE_ART_VERSION}:${state.book.id}:${state.page}`); }
 
 function saveArtwork() {
   if (isImageBook(state.book)) {
