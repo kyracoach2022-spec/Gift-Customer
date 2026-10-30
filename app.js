@@ -172,7 +172,8 @@ const DEFAULT_PROFILES = [
 const PROFILE_COLORS = ['#ffcf33', '#55caa8', '#ff6b6b', '#2f96d8', '#8067d8', '#f472b6'];
 const IMAGE_BOUNDARY_LUMINANCE = 195;
 const IMAGE_DISPLAY_LINE_LUMINANCE = 150;
-const IMAGE_BOUNDARY_DILATE_RADIUS = 1;
+// Page PNGs ship with bold, gap-sealed outlines, so fills may run right up to (and under) the line.
+const IMAGE_BOUNDARY_DILATE_RADIUS = 0;
 const MAX_IMAGE_REGION_RATIO = .72;
 const MOBILE_READER_QUERY = '(max-width: 920px)';
 const MOBILE_IMAGE_MAX_EDGE = 960;
@@ -1020,8 +1021,8 @@ function buildDisplayLineArtData(sourceData) {
   const src = sourceData.data;
   for (let index = 0; index < src.length; index += 4) {
     const lum = src[index] * .299 + src[index + 1] * .587 + src[index + 2] * .114;
-    const isBoundary = src[index + 3] > 16 && lum < IMAGE_DISPLAY_LINE_LUMINANCE;
-    const value = isBoundary ? 0 : 255;
+    // Keep the outline's anti-aliased edge (multiplied over the paint) so strokes stay smooth, not jagged.
+    const value = src[index + 3] <= 16 || lum >= 235 ? 255 : lum < IMAGE_DISPLAY_LINE_LUMINANCE ? Math.min(lum, 40) : lum;
     display.data[index] = value;
     display.data[index + 1] = value;
     display.data[index + 2] = value;
