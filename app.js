@@ -172,8 +172,9 @@ const DEFAULT_PROFILES = [
 const PROFILE_COLORS = ['#ffcf33', '#55caa8', '#ff6b6b', '#2f96d8', '#8067d8', '#f472b6'];
 const IMAGE_BOUNDARY_LUMINANCE = 195;
 const IMAGE_DISPLAY_LINE_LUMINANCE = 150;
-// Page PNGs ship with bold, gap-sealed outlines, so fills may run right up to (and under) the line.
-const IMAGE_BOUNDARY_DILATE_RADIUS = 0;
+const IMAGE_BOUNDARY_DILATE_RADIUS = 1;
+// The finished fill is grown by this much so colour tucks under the outline's soft edge (no white rim).
+const IMAGE_FILL_BLEED = 2;
 const MAX_IMAGE_REGION_RATIO = .72;
 const MOBILE_READER_QUERY = '(max-width: 920px)';
 const MOBILE_IMAGE_MAX_EDGE = 960;
@@ -1021,8 +1022,9 @@ function buildDisplayLineArtData(sourceData) {
   const src = sourceData.data;
   for (let index = 0; index < src.length; index += 4) {
     const lum = src[index] * .299 + src[index + 1] * .587 + src[index + 2] * .114;
-    // Keep the outline's anti-aliased edge (multiplied over the paint) so strokes stay smooth, not jagged.
-    const value = src[index + 3] <= 16 || lum >= 235 ? 255 : lum < IMAGE_DISPLAY_LINE_LUMINANCE ? Math.min(lum, 40) : lum;
+    // Show the artwork exactly as drawn (multiplied over the paint): thresholding it to pure black/white
+    // dropped light strokes and made edges jagged. Only near-white paper noise is cleaned to white.
+    const value = src[index + 3] <= 16 || lum >= 245 ? 255 : Math.round(lum);
     display.data[index] = value;
     display.data[index + 1] = value;
     display.data[index + 2] = value;
@@ -1088,6 +1090,21 @@ function buildImageRegionMask(point) {
     output[out + 3] = 255;
   }
   maskCtx.putImageData(maskImage, 0, 0);
+  if (IMAGE_FILL_BLEED > 0) {
+    const copy = document.createElement('canvas');
+    copy.width = width;
+    copy.height = height;
+    copy.getContext('2d').drawImage(maskCanvas, 0, 0);
+    for (let dy = -IMAGE_FILL_BLEED; dy <= IMAGE_FILL_BLEED; dy += 1) {
+      for (let dx = -IMAGE_FILL_BLEED; dx <= IMAGE_FILL_BLEED; dx += 1) {
+        if ((dx || dy) && dx * dx + dy * dy <= IMAGE_FILL_BLEED * IMAGE_FILL_BLEED + 1) maskCtx.drawImage(copy, dx, dy);
+      }
+    }
+    minX = Math.max(0, minX - IMAGE_FILL_BLEED);
+    minY = Math.max(0, minY - IMAGE_FILL_BLEED);
+    maxX = Math.min(width - 1, maxX + IMAGE_FILL_BLEED);
+    maxY = Math.min(height - 1, maxY + IMAGE_FILL_BLEED);
+  }
   return { canvas: maskCanvas, count, bounds: { minX, minY, maxX, maxY } };
 }
 
@@ -1514,9 +1531,7 @@ function processUnlockCodeFromUrl() {
 }
 
 function fillKey() { return userKey(`fills:${state.book.id}:${state.page}`); }
-// Bump LINE_ART_VERSION whenever page PNGs are redrawn: paint saved against older art no longer lines up.
-const LINE_ART_VERSION = 'a3';
-function canvasKey() { return userKey(`canvas:${LINE_ART_VERSION}:${state.book.id}:${state.page}`); }
+function canvasKey() { return userKey(`canvas:${state.book.id}:${state.page}`); }
 
 function saveArtwork() {
   if (isImageBook(state.book)) {
