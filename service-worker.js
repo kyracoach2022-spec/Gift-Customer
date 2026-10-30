@@ -1,4 +1,4 @@
-const CACHE_NAME = 'zana-kids-pwa-v35';
+const CACHE_NAME = 'zana-kids-pwa-v36';
 const CORE_ASSETS = [
   './',
   './index.html',
