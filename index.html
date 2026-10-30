@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#ffcf33">
+  <meta name="description" content="ZANA Kids Coloring World is an iPad-ready PWA for coloring books with isolated local saves for each child profile.">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="ZANA Kids">
+  <title>ZANA Kids Coloring World</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icon.svg">
+<link rel="stylesheet" href="app.css?v=34">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <button class="icon-button back-button" id="backButton" type="button" aria-label="Back to library" title="Back to library">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"/><path d="M9 12h11"/></svg>
+      </button>
+      <a class="brand" href="#" aria-label="ZANA Kids Coloring and Learning home">
+        <span class="brand-mark" aria-hidden="true">Z</span>
+        <span>
+          <strong>ZANA Kids</strong>
+          <small>Coloring World</small>
+        </span>
+      </a>
+      <div class="install-area">
+                <button class="profile-button" id="profileButton" type="button" aria-label="Switch child profile" title="Switch profile">
+          <span class="profile-avatar" id="profileAvatar" aria-hidden="true">K</span>
+          <span class="profile-copy">
+            <strong id="profileName">Kid 1</strong>
+            <small>Local save</small>
+          </span>
+        </button>
+        <span class="sync-pill" id="statusPill">Ready</span>
+        <button class="soft-button" id="installButton" type="button" hidden>Install</button>
+      </div>
+    </header>
+
+    <main id="libraryView" class="library-view">
+      <section class="library-head">
+        <div>
+          <p class="eyebrow">Free digital coloring book</p>
+          <h1>Bear & Friend Everyday Life</h1>
+          <p class="library-copy">สมุดระบายสีดิจิทัลสำหรับลูกค้า ZANA Kid Perfumed ใช้นิ้วหรือ Apple Pencil ได้ พร้อมโหมด Stay Inside Lines ช่วยให้เด็ก ๆ ระบายสนุกและสีไม่ออกนอกพื้นที่ที่เลือก</p>
+          <div class="hero-actions">
+            <a class="hero-primary" href="#book=kid-perfume&page=1">เปิดสมุดระบายสี</a>
+            <span>Book 1 · ZANA Kid Perfume</span>
+          </div>
+        </div>
+        <div class="library-side">
+          <div class="featured-book-panel" aria-label="Featured free book">
+            <img src="covers/kid-perfume.png" alt="ZANA Kid Perfume Everyday Life Coloring Book cover" loading="eager" decoding="async">
+          </div>
+          <div class="library-stats" aria-label="Library statistics">
+            <div><strong id="bookCount">7</strong><span>Books</span></div>
+            <div><strong id="pageCount">105</strong><span>Pages</span></div>
+            <div><strong>PWA</strong><span>Offline ready</span></div>
+          </div>
+          <div class="unlock-guide" aria-label="Unlock code guide">
+            <strong>รับสมุดฟรีจาก LINE</strong>
+            <span>พิมพ์ ซาน่าคิดส์ เพื่อรับลิงก์เปิดเล่ม Bear & Friend Everyday Life ส่วน Sea Animals และเล่มอื่นยังต้องใช้รหัส</span>
+          </div>
+        </div>
+      </section>
+      <section class="book-grid" id="bookGrid" aria-label="Book library"></section>
+    </main>
+
+    <main id="readerView" class="reader-view" hidden>
+      <aside class="reader-rail" aria-label="Book controls">
+        <div class="reader-title">
+          <span id="modeBadge">COLORING MODE</span>
+          <h2 id="readerBookTitle">Book</h2>
+          <p id="readerBookMeta">Page 1</p>
+        </div>
+
+        <div class="tool-group" id="coloringTools">
+          <div class="tool-row segmented" role="group" aria-label="Tool selection">
+            <button class="tool-button active" type="button" data-tool="fill" title="Fill bucket" aria-label="Fill bucket">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 14l8-8 6 6-8 8H4v-6z"/><path d="M14 4l6 6"/><path d="M19 15s2 2.2 2 3.5a2 2 0 0 1-4 0c0-1.3 2-3.5 2-3.5z"/></svg>
+            </button>
+            <button class="tool-button" type="button" data-tool="brush" title="Brush / Crayon" aria-label="Brush / Crayon">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20c2 0 4-.8 4-3"/><path d="M8 17L19 6a2 2 0 0 0-3-3L5 14"/><path d="M5 14l3 3"/></svg>
+            </button>
+            <button class="tool-button" type="button" data-tool="eraser" title="Eraser" aria-label="Eraser">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 21h10"/><path d="M20 11l-7.5 7.5a3 3 0 0 1-4.2 0L4 14.2a3 3 0 0 1 0-4.2L10 4a3 3 0 0 1 4.2 0L20 9.8a.8.8 0 0 1 0 1.2z"/></svg>
+            </button>
+          </div>
+          <div class="palette" id="palette" aria-label="Color palette"></div>
+          <label class="slider-label">Brush / Crayon size <input id="brushSize" type="range" min="4" max="42" value="16"></label>
+        </div>
+
+        <div class="tool-group">
+          <div class="tool-row">
+            <button class="tool-button" type="button" id="undoButton" title="Undo" aria-label="Undo">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7H4v5"/><path d="M4 12a8 8 0 1 0 2.3-5.7L4 8.6"/></svg>
+            </button>
+            <button class="tool-button" type="button" id="redoButton" title="Redo" aria-label="Redo">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 7h5v5"/><path d="M20 12a8 8 0 1 1-2.3-5.7L20 8.6"/></svg>
+            </button>
+            <button class="tool-button" type="button" id="resetButton" title="Reset page" aria-label="Reset page">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v6h6"/></svg>
+            </button>
+          </div>
+          <div class="tool-row">
+            <button class="tool-button" type="button" id="zoomOutButton" title="Zoom out" aria-label="Zoom out">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M8 11h6"/><path d="M16.5 16.5L21 21"/></svg>
+            </button>
+            <button class="tool-button" type="button" id="zoomInButton" title="Zoom in" aria-label="Zoom in">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M8 11h6"/><path d="M11 8v6"/><path d="M16.5 16.5L21 21"/></svg>
+            </button>
+            <button class="tool-button" type="button" id="saveButton" title="Save artwork" aria-label="Save artwork">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M7 3v6h8"/><path d="M7 21v-8h10v8"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="tool-group page-controls">
+          <button class="nav-button" id="prevPageButton" type="button">Previous</button>
+          <input id="pageSlider" type="range" min="1" max="1" value="1" aria-label="Page">
+          <button class="nav-button" id="nextPageButton" type="button">Next</button>
+          <a class="source-link" id="sourceLink" href="#" target="_blank" rel="noopener">Printable version</a>
+        </div>
+      </aside>
+
+      <section class="reader-stage-wrap">
+        <div class="reader-stage" id="readerStage">
+          <div class="loading-card" id="loadingCard">Loading book...</div>
+          <div class="page-host" id="pageHost"></div>
+          <canvas id="drawCanvas" aria-label="Drawing layer"></canvas>
+        </div>
+      </section>
+    </main>
+
+    <div class="user-modal" id="userModal" hidden>
+      <div class="user-dialog" role="dialog" aria-modal="true" aria-labelledby="userDialogTitle">
+        <div class="user-dialog-head">
+          <div>
+            <p class="eyebrow">Profiles</p>
+            <h2 id="userDialogTitle">Choose Child</h2>
+          </div>
+          <button class="icon-button" id="closeUserModal" type="button" aria-label="Close profiles" title="Close">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>
+          </button>
+        </div>
+        <div class="user-list" id="userList"></div>
+        <button class="soft-button add-user-button" id="addUserButton" type="button">Add Child</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js?v=34" defer></script>
+</body>
+</html>
+
+
+
+
+
+
+
